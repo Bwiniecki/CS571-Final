@@ -1,19 +1,44 @@
-import Calculator from './Calculator';
+// src/App.jsx
+
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+// Import Components
+import NavBar from './components/NavBar';
+import Calculator from './Calculator'; // The core analyzer tool
+import MetricsPage from './pages/MetricsPage'; 
+import SavedDealsPage from './pages/SavedDealsPage'; 
 
 function App() {
   return (
-    // ADD max-w-7xl (or another max-width size like max-w-6xl or max-w-5xl)
-    // The container class often implies mx-auto, but combining it with a max-width
-    // ensures it is properly contained and centered on larger screens.
-    <div className="container mx-auto p-4 md:p-8 max-w-7xl">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">Real Estate Investment Analyzer</h1>
-        <p className="text-gray-600 mt-2">Find multi-family properties and analyze their investment potential.</p>
-      </header>
-      <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Calculator />
-      </main>
-    </div>
+    // The <></> fragment ensures the NavBar sits outside the max-width container 
+    // but still wraps the whole application.
+    <>
+      <NavBar /> {/* Primary Navigation Bar */}
+      
+      {/* The main content wrapper, now with the centering fix */}
+      <div className="container mx-auto p-4 md:p-8 max-w-7xl">
+        <main>
+          {/* React Router Routes */}
+          <Routes>
+            {/* Home Page: The Analyzer Tool */}
+            <Route path="/" element={<Calculator />} />
+            
+            {/* Secondary Pages */}
+            <Route path="/metrics" element={<MetricsPage />} />
+            <Route path="/saved" element={<SavedDealsPage />} />
+            
+            {/* 404 Catch-all */}
+            <Route path="*" element={
+              <div className="text-center p-10">
+                <h2 className="text-4xl font-bold text-red-600">404</h2>
+                <p className="text-xl text-gray-600">Page Not Found</p>
+              </div>
+            } /> 
+          </Routes>
+        </main>
+      </div>
+    </>
   );
 }
 
