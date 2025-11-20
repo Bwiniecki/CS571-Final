@@ -1,7 +1,5 @@
 // src/pages/SavedDealsPage.jsx
-
 import React from 'react';
-import { Container, Table } from 'react-bootstrap';
 
 // Dummy data to simulate saved properties
 const dummySavedDeals = [
@@ -14,41 +12,45 @@ const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 
 
 const SavedDealsPage = () => {
     return (
-        <Container className="mt-5 p-4 bg-white rounded-xl shadow-lg">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">💾 Saved Deals & Portfolio Comparison</h2>
+        <div className="mt-5 p-6 bg-white rounded-xl shadow-lg">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">💾 Saved Deals & Portfolio</h2>
             <p className="text-gray-700 mb-6">
-                This page lists properties you've flagged as potential investments (using dummy data for now).
+                This page lists properties you've flagged as potential investments.
             </p>
 
-            <Table striped bordered hover responsive className="text-sm">
-                <thead className="bg-gray-200">
-                    <tr>
-                        <th>Address</th>
-                        <th>Price</th>
-                        <th>Yearly Cashflow</th>
-                        <th>CoC Return</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {dummySavedDeals.map(deal => (
-                        <tr key={deal.id}>
-                            <td>{deal.address}</td>
-                            <td>{formatter.format(deal.price)}</td>
-                            <td>{formatter.format(deal.cashflow)}</td>
-                            <td className={deal.coc > 10 ? 'text-success font-bold' : 'text-warning font-bold'}>
-                                {deal.coc.toFixed(2)}%
-                            </td>
-                            <td>{deal.status}</td>
-                            <td>
-                                <button className="btn btn-sm btn-outline-danger">Remove</button>
-                            </td>
+            <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-left text-gray-500 border border-gray-200">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 border-b">Address</th>
+                            <th className="px-6 py-3 border-b">Price</th>
+                            <th className="px-6 py-3 border-b">Yearly Cashflow</th>
+                            <th className="px-6 py-3 border-b">CoC Return</th>
+                            <th className="px-6 py-3 border-b">Status</th>
+                            <th className="px-6 py-3 border-b">Action</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </Container>
+                    </thead>
+                    <tbody>
+                        {dummySavedDeals.map(deal => (
+                            <tr key={deal.id} className="bg-white border-b hover:bg-gray-50">
+                                <td className="px-6 py-4 font-medium text-gray-900">{deal.address}</td>
+                                <td className="px-6 py-4">{formatter.format(deal.price)}</td>
+                                <td className="px-6 py-4">{formatter.format(deal.cashflow)}</td>
+                                <td className={`px-6 py-4 font-bold ${deal.coc > 10 ? 'text-green-600' : 'text-yellow-600'}`}>
+                                    {deal.coc.toFixed(2)}%
+                                </td>
+                                <td className="px-6 py-4">{deal.status}</td>
+                                <td className="px-6 py-4">
+                                    <button className="text-red-600 hover:text-red-900 font-semibold border border-red-200 px-3 py-1 rounded hover:bg-red-50">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     );
 };
 
