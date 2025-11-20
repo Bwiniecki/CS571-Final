@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // CORRECT BASE PATH: Needs the repository name (CS571-Final) before the project subdirectory (p0)
-  base: '/CS571-Final/',
+  // Last Resort: Use a relative path to force assets to load correctly
+  base: './', 
   build: {
     outDir: 'docs'
   }
