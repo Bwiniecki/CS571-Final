@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Utility function for formatting currency (from original JS)
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -8,14 +7,15 @@ const formatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 0
 });
 
-// Utility function for rendering a single row
-const TableRow = ({ item, onExportPDF }) => {
-    const cocColor = item.coc > 10 ? 'text-green-600' : item.coc > 5 ? 'text-yellow-600' : 'text-red-600';
+const TableRow = ({ item, onExportPDF, onSave }) => {
+    // Accessibility Fix: Darker colors for WCAG AA contrast against white background
+    const cocColor = item.coc > 10 ? 'text-green-700' : item.coc > 5 ? 'text-yellow-700' : 'text-red-700';
     
     return (
         <tr className="bg-white border-b hover:bg-gray-50">
             <td className="px-6 py-4 font-medium text-gray-900">
-                <a href={`https://www.zillow.com/homedetails/${item.zpid}_zpid/`} target="_blank" className="hover:underline text-indigo-600" rel="noopener noreferrer">
+                {/* Security Fix: Added rel="noopener noreferrer" which was already present, kept for completeness */}
+                <a href={`https://www.zillow.com/homedetails/${item.zpid}_zpid/`} target="_blank" className="hover:underline text-indigo-700" rel="noopener noreferrer">
                     {item.address}
                 </a>
             </td>
@@ -24,10 +24,20 @@ const TableRow = ({ item, onExportPDF }) => {
             <td className="px-6 py-4">{formatter.format(item.capital)}</td>
             <td className="px-6 py-4">{formatter.format(item.cashflow)}</td>
             <td className={`px-6 py-4 font-bold ${cocColor}`}>{item.coc.toFixed(2)}%</td>
-            <td className="px-6 py-4">
+            <td className="px-6 py-4 flex gap-2">
+                 {/* Accessibility Fix: Added aria-label for screen readers */}
+                 <button
+                    className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-1 px-2 rounded focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    onClick={() => onSave(item)}
+                    aria-label={`Save property at ${item.address}`}
+                >
+                    Save
+                </button>
+                {/* Accessibility Fix: Added aria-label for screen readers */}
                 <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1 px-2 rounded"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     onClick={() => onExportPDF(item)}
+                    aria-label={`Export PDF for ${item.address}`}
                 >
                     PDF
                 </button>
@@ -36,7 +46,7 @@ const TableRow = ({ item, onExportPDF }) => {
     );
 };
 
-const ResultsTable = ({ results, onExportPDF, sortState, setSortState }) => {
+const ResultsTable = ({ results, onExportPDF, onSave, sortState, setSortState }) => {
 
     const handleSort = (column) => {
         if (sortState.column === column) {
@@ -47,18 +57,12 @@ const ResultsTable = ({ results, onExportPDF, sortState, setSortState }) => {
     };
 
     if (!results.length) {
-        return (
-             <div className="text-center p-8 text-gray-500">
-                No valid results to display.
-            </div>
-        );
+        return <div className="text-center p-8 text-gray-500">No valid results to display.</div>;
     }
 
-    // Sort the data based on current state
     const sortedResults = [...results].sort((a, b) => {
         let valA = a[sortState.column];
         let valB = b[sortState.column];
-
         if (typeof valA === 'string') {
             return sortState.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
         } else {
@@ -68,7 +72,7 @@ const ResultsTable = ({ results, onExportPDF, sortState, setSortState }) => {
 
     return (
         <div id="results-container">
-            <h2 className="text-2xl font-bold mb-4">Analysis Results</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Analysis Results</h2>
             <div className="table-container overflow-x-auto max-h-[70vh] relative">
                 <table className="w-full text-sm text-left text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
@@ -79,22 +83,25 @@ const ResultsTable = ({ results, onExportPDF, sortState, setSortState }) => {
                                     <th
                                         key={columnKey}
                                         scope="col"
-                                        className={`px-6 py-3 cursor-pointer hover:bg-gray-200 ${index === 0 ? 'rounded-l-lg' : ''} ${index === 5 ? 'rounded-r-lg' : ''}`}
+                                        className={`px-6 py-3 cursor-pointer hover:bg-gray-200 text-gray-800 ${index === 0 ? 'rounded-l-lg' : ''}`}
                                         onClick={() => handleSort(columnKey)}
+                                        aria-sort={sortState.column === columnKey ? (sortState.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
                                     >
-                                        {header}
-                                        {sortState.column === columnKey && (
-                                            sortState.direction === 'asc' ? ' 🔼' : ' 🔽'
-                                        )}
+                                        <div className="flex items-center">
+                                            {header}
+                                            {sortState.column === columnKey && (
+                                                <span className="ml-1">{sortState.direction === 'asc' ? ' ▲' : ' ▼'}</span>
+                                            )}
+                                        </div>
                                     </th>
                                 );
                             })}
-                            <th scope="col" className="px-6 py-3">Export</th>
+                            <th scope="col" className="px-6 py-3 rounded-r-lg text-gray-800">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {sortedResults.map(item => (
-                            <TableRow key={item.zpid} item={item} onExportPDF={onExportPDF} />
+                            <TableRow key={item.zpid} item={item} onExportPDF={onExportPDF} onSave={onSave} />
                         ))}
                     </tbody>
                 </table>

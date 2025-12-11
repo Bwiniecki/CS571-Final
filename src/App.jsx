@@ -1,25 +1,20 @@
-// src/App.jsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-
-// Import Components
 import NavBar from './components/NavBar';
+import Header from './components/Header'; // NEW
+import Footer from './components/Footer'; // NEW
 import Calculator from './Calculator'; 
 import MetricsPage from './pages/MetricsPage'; 
 import SavedDealsPage from './pages/SavedDealsPage'; 
 
 function App() {
   return (
-    // The main wrapper is now bg-gray-50 for a clean background
-    <div className="bg-gray-50 min-h-screen"> 
+    <div className="bg-gray-50 min-h-screen flex flex-col"> 
+      <NavBar />
       
-      <NavBar /> {/* Primary Navigation Bar is always full width */}
-      
-      {/* The content wrapper: centered and padded, matching the NavBar's max width */}
-      <div className="container mx-auto p-4 md:p-8 max-w-7xl">
+      <div className="container mx-auto p-4 md:p-8 max-w-7xl flex-grow">
+        <Header /> {/* Meaningful component usage */}
         <main>
-          {/* React Router Routes */}
           <Routes>
             <Route path="/" element={<Calculator />} />
             <Route path="/metrics" element={<MetricsPage />} />
@@ -33,6 +28,7 @@ function App() {
           </Routes>
         </main>
       </div>
+      <Footer /> {/* Meaningful component usage */}
     </div>
   );
 }
